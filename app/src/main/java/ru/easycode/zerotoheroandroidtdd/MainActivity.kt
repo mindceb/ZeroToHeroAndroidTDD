@@ -1,7 +1,6 @@
 package ru.easycode.zerotoheroandroidtdd
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -9,11 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var rootLayout: LinearLayout
-
     private lateinit var titleTextView: TextView
 
-    private lateinit var removeButton: Button
+    private lateinit var rootLayout: LinearLayout
+
+    private lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,29 +20,30 @@ class MainActivity : AppCompatActivity() {
 
         rootLayout = findViewById(R.id.rootLayout)
         titleTextView = findViewById(R.id.titleTextView)
-        removeButton = findViewById(R.id.removeButton)
-        removeButton.setOnClickListener {
+        button = findViewById(R.id.removeButton)
+        button.setOnClickListener {
             rootLayout.removeView(titleTextView)
-            removeButton.isEnabled = false
+            button.isEnabled = false
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        outState.putBoolean(REMOVED_VIEW_KEY, rootLayout.childCount == 1)
-        outState.putBoolean(REMOVE_BUTTON_ENABLED_KEY, removeButton.isEnabled)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val removedView = rootLayout.childCount == 1
+        outState.putBoolean(VISIBILITY_KEY, removedView)
+        outState.putBoolean(ENABLED_KEY, button.isEnabled)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        if (!savedInstanceState.getBoolean(REMOVED_VIEW_KEY)) {
+        if (savedInstanceState.getBoolean(VISIBILITY_KEY)) {
             rootLayout.removeView(titleTextView)
         }
-        removeButton.isEnabled = savedInstanceState.getBoolean(REMOVE_BUTTON_ENABLED_KEY)
+        button.isEnabled = savedInstanceState.getBoolean(ENABLED_KEY)
     }
 
-    private companion object {
-        private const val REMOVED_VIEW_KEY = "REMOVED_VIEW_KEY"
-        private const val REMOVE_BUTTON_ENABLED_KEY = "REMOVE_BUTTON_ENABLED_KEY"
+    companion object {
+        private const val VISIBILITY_KEY = "VISIBILITY_KEY"
+        private const val ENABLED_KEY = "ENABLED_KEY"
     }
 }
